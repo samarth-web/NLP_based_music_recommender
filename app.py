@@ -1,3 +1,4 @@
+import streamlit as st
 import spotipy
 from dotenv import load_dotenv
 import os
@@ -27,8 +28,20 @@ playlist_description = f"A playlist of my {time_pref} top 50 tracks via Spotify 
 playlist_created = music.user_playlist_create(     user=user_id,      name=playlist_name,     public=True,      description=playlist_description )
 time.sleep(2)
 music.playlist_add_items(playlist_id=playlist_created['id'], items=song_links)
+print("Check your spotify app now :) ")
+playlist_id = playlist_created['id']
+embed_url = f"https://open.spotify.com/embed/playlist/{playlist_id}"
 
-
-
-
+st.title('Mood Music Recommendation')
+st.markdown(
+    f"""
+    <iframe src="{embed_url}" 
+    width="400" 
+    height="600" 
+    frameborder="0" 
+    allowtransparency="true" 
+    allow="encrypted-media"></iframe>
+    """,
+    unsafe_allow_html=True
+)
 
