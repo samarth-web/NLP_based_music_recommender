@@ -15,6 +15,8 @@ time_pref = 'long_term'
 top_tracks = music.current_user_top_tracks(limit=50, offset=0, time_range=time_pref)
 song_links = []
 counter = 1
+
+var = 0
 for track in top_tracks['items']:
     track_name = track['name']
     artists = ", ".join([artist['name'] for artist in track['artists']])
@@ -40,8 +42,8 @@ st.markdown(
     height="600" 
     frameborder="0" 
     allowtransparency="true" 
-    allow="encrypted-media"></iframe>
+    allow="encrypted-media"></iframe> 
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True #tested
 )
 
