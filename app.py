@@ -48,10 +48,16 @@ def music_creation():
     scope = "user-top-read playlist-modify-public"
     auth_manager = SpotifyOAuth(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri=REDIRECT_URI, scope=scope)
     music = spotipy.Spotify(auth_manager=auth_manager)
-    recs = music.recommendations(
-    seed_genres="pop", 
-    limit=1
-    )
+    # recs = music.recommendations(seed_genres=["pop"], limit=1)
+    try:
+        genres = music.recommendation_genre_seeds()['genres']
+        print("Available Genres:")
+        print(", ".join(genres))
+        return genres
+    except Exception as e:
+        print(f"Error fetching available genres: {e}")
+        return []
+
     print(recs)   
     # mood_params = {"happy": {"target_valence": 0.8, "target_energy": 0.7},
     #                "sad": {"target_valence": 0.2, "target_energy": 0.3},
@@ -113,5 +119,5 @@ def music_creation():
     #     unsafe_allow_html=True #tested
     #)
 if __name__ == "__main__":
-    music_creation()
+    print(music_creation())
     
