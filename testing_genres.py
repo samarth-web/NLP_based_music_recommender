@@ -6,6 +6,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import time
 import cv2
 from deepface import DeepFace
+import kagglehub
 def emotion_detection():
    
     cam = cv2.VideoCapture(0)
@@ -66,41 +67,11 @@ def music_creation():
     time_pref = 'long_term'
     top_tracks = music.current_user_top_tracks(limit=50, offset=0, time_range=time_pref)
     track_ids = [track['id'] for track in top_tracks]
-    audio_features = music.audio_features(tracks=track_ids)
-    change_allow = 0.1
-    print(audio_features)
-    # song_links = []
-    # counter = 1
-
-    # var = 0
-    # for track in top_tracks['items']:
-    #     track_name = track['name']
-    #     artists = ", ".join([artist['name'] for artist in track['artists']])
-    #     print(f"{counter}. {track_name} by {artists}")
-    #     song_links.append(track['uri'])
-    #     counter = counter + 1
-    # print("Public playlist created in Spotify account")
-    # user_id = music.current_user()['id']
-    # playlist_name = "My Top 50 Tracks"
-    # playlist_description = f"A playlist of my {time_pref} top 50 tracks via Spotify API"
-    # playlist_created = music.user_playlist_create(     user=user_id,      name=playlist_name,     public=True,      description=playlist_description )
-    # time.sleep(2)
-    # music.playlist_add_items(playlist_id=playlist_created['id'], items=song_links)
-    # print("Check your spotify app now :) ")
-    # playlist_id = playlist_created['id']
-    # embed_url = f"https://open.spotify.com/embed/playlist/{playlist_id}"
-
-    # st.title('Mood Music Recommendation')
-    # st.markdown(
-    #     f"""
-    #     <iframe src="{embed_url}" 
-    #     width="400" 
-    #     height="600" 
-    #     frameborder="0" 
-    #     allowtransparency="true" 
-    #     allow="encrypted-media"></iframe> 
-    #     """,
-    #     unsafe_allow_html=True #tested
+    # audio_features = music.audio_features(tracks=track_ids)
+    # change_allow = 0.1
+    path = kagglehub.dataset_download("vicsuperman/prediction-of-music-genre")
+    print(path)
+   
 if __name__ == "__main__":
     music_creation()
     
