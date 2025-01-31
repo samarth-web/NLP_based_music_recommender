@@ -8,6 +8,7 @@ import cv2
 from deepface import DeepFace
 import pandas as pd
 import numpy as np
+import time
 def emotion_detection():
    
     cam = cv2.VideoCapture(0)
@@ -58,7 +59,7 @@ def get_spotify_track_ids(music, song_titles, artist_names):
     return spotify_ids
 
 
-def music_creation():
+def music_creation(emotion):
     load_dotenv(dotenv_path="../.env")
     CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
     CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
@@ -74,7 +75,7 @@ def music_creation():
                    "angry": {"target_valence": 0.1, "target_energy": 0.9},
                    "neutral": {"target_valence": 0.5, "target_energy": 0.5},
                    "disgust": {"target_valence": 0.1, "target_energy": 0.5}}
-    emotion =  emotion_detection()
+    emotion =  emotion
     if emotion is None:
         return
     emotion = emotion.lower()
@@ -108,6 +109,7 @@ def music_creation():
     playlist_created = music.user_playlist_create(user=user_id, name=playlist_name, public=True, description=playlist_description)
     
     music.playlist_add_items(playlist_id=playlist_created['id'], items=spotify_track_ids)
+    return playlist_created['id']
     print("Playlist created successfully! Check your Spotify.")
     # print("Public playlist created in Spotify account")
     # 
@@ -130,6 +132,62 @@ def music_creation():
     #     """,
     #     unsafe_allow_html=True #tested
 if __name__ == "__main__":
-    music_creation()
+    val = False
+    # username = st.text_input("Enter a unique username:")
+
+    # if username:
+    #     cache_path = f".cache_{username}"  # Unique cache per user
+        
+    #     auth_manager = SpotifyOAuth(
+    #         client_id=CLIENT_ID,
+    #         client_secret=CLIENT_SECRET,
+    #         redirect_uri=REDIRECT_URI,
+    #         scope="playlist-modify-public",
+    #         cache_path=cache_path
+    #     )
+
+    # music = spotipy.Spotify(auth_manager=auth_manager)
+    # st.success(f"Logged into Spotify as: {music.current_user()['display_name']}")
     
+    if "button_clicked" not in st.session_state:
+        st.session_state.button_clicked = False
+    if st.button("Capture Image & Generate Playlist"):
+        st.session_state.button_clicked = True
+    st.title("Playlist Creation")
+    st.write("Get Ready!!! Camera is opening")
+    if st.session_state.button_clicked:
+        cam = cv2.VideoCapture(0)
+        ret, frame = cam.read()
+        if not ret or frame is None or frame.size == 0:
+            st.error("No valid image captured! Please check your camera.")
+            val = "neutral"
+        else:
+            st.write("Capturing emotion")
+            emotion = emotion_detection()
+            st.success(f"Emotion Captured: {emotion}")
+            val = music_creation(emotion)
+        
+    
+    
+
+        play_url = f"https://open.spotify.com/embed/playlist/{val}"
+        #st.markdown("<br><br><br>", unsafe_allow_html=True) 
+        st.markdown(
+            f"""
+            <iframe src="{play_url}" 
+            width="400" 
+            height="600" 
+            frameborder="0" 
+            allowtransparency="true" 
+            allow="encrypted-media"></iframe> 
+            """,
+            unsafe_allow_html=True
+        )
+        st.success("Playlist created! Enjoy your music! :)")
+        if st.button("🔄 Logout from Spotify"):
+            if os.path.exists(".cache"):
+                os.remove(".cache")
+                st.success("Logged out! Please refresh the page and log in again.")
+
+        
 print("hi")
